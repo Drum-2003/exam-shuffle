@@ -11,7 +11,13 @@ import {
   WidthType,
 } from "docx";
 import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { createRequire } from "node:module";
 import PDFDocument from "pdfkit";
+
+const require = createRequire(import.meta.url);
+const dejavuPackagePath = require.resolve("dejavu-fonts-ttf/package.json");
+const dejavuRoot = dirname(dejavuPackagePath);
 
 type ExamDetail = {
   title: string;
@@ -30,6 +36,7 @@ type ExamCodeDetail = ExamDetail["codes"][number];
 
 const regularPdfFontCandidates = [
   process.env.PDF_FONT_REGULAR,
+  join(dejavuRoot, "ttf", "DejaVuSans.ttf"),
   "C:/Windows/Fonts/arial.ttf",
   "C:/Windows/Fonts/segoeui.ttf",
   "C:/Windows/Fonts/tahoma.ttf",
@@ -39,6 +46,7 @@ const regularPdfFontCandidates = [
 
 const boldPdfFontCandidates = [
   process.env.PDF_FONT_BOLD,
+  join(dejavuRoot, "ttf", "DejaVuSans-Bold.ttf"),
   "C:/Windows/Fonts/arialbd.ttf",
   "C:/Windows/Fonts/segoeuib.ttf",
   "C:/Windows/Fonts/tahomabd.ttf",
