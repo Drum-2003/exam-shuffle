@@ -1,36 +1,44 @@
-# Ứng dụng xáo trộn câu hỏi trắc nghiệm
+# Exam Shuffle
 
-Ứng dụng xáo trộn câu hỏi trắc nghiệm và sinh đề từ ngân hàng câu hỏi. Hệ thống hỗ trợ quản lý môn học, chương, câu hỏi, sinh nhiều mã đề và lưu đáp án cố định để xem lại hoặc xuất file.
+Ứng dụng xáo trộn câu hỏi trắc nghiệm và sinh nhiều mã đề từ ngân hàng câu hỏi. Hệ thống hỗ trợ quản lý môn học, chương, câu hỏi, import Excel, sinh đề theo cơ cấu độ khó, lưu đáp án cố định và xuất Word/PDF theo từng mã đề.
 
-## Stack
+## Tính năng
 
-- Client: Next.js, TypeScript, Tailwind CSS v4, HeroUI v3
+- Quản lý môn học, chương và ngân hàng câu hỏi trắc nghiệm.
+- Import câu hỏi từ Excel bằng tên môn và tên chương, không cần tự điền `subjectId` hoặc `chapterId`.
+- Tự tạo môn/chương khi import nếu dữ liệu chưa tồn tại.
+- Sinh nhiều mã đề từ cùng một ngân hàng câu hỏi.
+- Xáo thứ tự câu hỏi và đáp án cho từng mã đề.
+- Xem trước từng mã đề và bảng đáp án.
+- Tải riêng từng mã đề ra Word hoặc PDF.
+- Tải bảng đáp án Word theo từng mã đề.
+- Giao diện Next.js, Tailwind CSS v4 và HeroUI v3.
+
+## Công nghệ
+
+- Client: Next.js, React, TypeScript, Tailwind CSS v4, HeroUI v3
 - Server: Express.js, TypeScript
 - Database: PostgreSQL
 - ORM: Prisma
 - Auth: JWT + bcrypt
-- Import: multer + xlsx
-- Export: docx, pdfkit
+- Import Excel: multer + xlsx
+- Export: docx + pdfkit
 
 ## Tài khoản demo
 
-- Email: `teacher@example.com`
-- Username: `teacher`
-- Password: `123456`
-
-## Chuẩn bị PostgreSQL
-
-Tạo database tên `exam-shuffle` với user PostgreSQL có mật khẩu `123456`.
-
-Ví dụ bằng `psql`:
-
-```bash
-psql -U postgres
-CREATE DATABASE "exam-shuffle";
-\q
+```text
+Email: teacher@example.com
+Username: teacher
+Password: 123456
 ```
 
-Tạo file `server/.env` từ mẫu:
+## Cài đặt
+
+```bash
+npm install
+```
+
+Tạo file môi trường:
 
 ```bash
 cp server/.env.example server/.env
@@ -44,7 +52,9 @@ Copy-Item server/.env.example server/.env
 Copy-Item client/.env.example client/.env.local
 ```
 
-Nội dung mặc định:
+## Cấu hình môi trường
+
+Server dùng `server/.env`:
 
 ```env
 DATABASE_URL="postgresql://postgres:123456@localhost:5432/exam-shuffle?schema=public"
@@ -53,39 +63,32 @@ PORT=4000
 CLIENT_URL="http://localhost:3000"
 ```
 
-Client dùng file `client/.env.local`:
+Client dùng `client/.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:4000/api"
 ```
 
-## Deploy server lên Vercel
+## Database
 
-Theo tài liệu Express on Vercel, Express app cần export ứng dụng ở entrypoint như `src/index.ts`. Server trong repo đã export `default app`; `app.listen()` chỉ chạy khi chạy local bằng `npm run dev:server` hoặc `npm run start --workspace server`.
+Tạo database PostgreSQL tên `exam-shuffle`.
 
-Khi tạo Vercel project cho API:
-
-1. Chọn Root Directory là `server`.
-2. Thêm Environment Variables:
-   - `DATABASE_URL`
-   - `JWT_SECRET`
-   - `CLIENT_URL`: domain frontend được phép gọi API, ví dụ `https://your-client.vercel.app`. Nếu có nhiều domain, ngăn cách bằng dấu phẩy.
-3. Sau khi deploy API, đặt `NEXT_PUBLIC_API_URL` trong project client thành `https://your-api.vercel.app/api`.
-
-## Cài đặt
+Ví dụ bằng `psql`:
 
 ```bash
-npm install
+psql -U postgres
+CREATE DATABASE "exam-shuffle";
+\q
 ```
 
-## Migrate và seed data
+Chạy migrate và seed:
 
 ```bash
 npm run db:migrate
 npm run db:seed
 ```
 
-Seed sẽ tạo tài khoản giáo viên demo, môn học, chương và câu hỏi mẫu.
+Seed sẽ xóa dữ liệu cũ và tạo lại tài khoản demo, môn học, chương và câu hỏi mẫu đủ để test sinh đề.
 
 ## Chạy local
 
@@ -102,36 +105,83 @@ npm run dev:server
 npm run dev:client
 ```
 
-- Client: http://localhost:3000
-- API: http://localhost:4000/api
-- Health check: http://localhost:4000/api/health
+Địa chỉ mặc định:
 
-## Các lệnh hữu ích
+- Client: `http://localhost:3000`
+- API: `http://localhost:4000/api`
+- Health check: `http://localhost:4000/api/health`
 
-```bash
-npm run typecheck
-npm run build
-npm run db:studio
-```
-
-## Luồng demo nhanh
+## Luồng test nhanh
 
 1. Đăng nhập bằng `teacher@example.com / 123456`.
-2. Vào Tổng quan để xem dữ liệu mẫu.
-3. Vào Sinh đề, chọn môn Toán 10, chọn các chương có sẵn.
-4. Tạo 6 câu, 2 mã đề, mã bắt đầu 101, cấu hình 3 dễ, 2 trung bình, 1 khó.
-5. Xem preview từng mã đề, kiểm tra bảng đáp án và tải file Word/PDF.
+2. Vào Tổng quan để kiểm tra dữ liệu mẫu.
+3. Vào Sinh đề.
+4. Chọn Toán 10 hoặc Vật lý 10.
+5. Chọn chương, số câu và cơ cấu độ khó.
+6. Sinh 2 mã đề bắt đầu từ mã 101.
+7. Vào Đề đã tạo để xem từng mã đề.
+8. Tải Word/PDF hoặc bảng đáp án theo từng mã đề.
 
-## Format import Excel
+## Import Excel
 
-File Excel dùng sheet đầu tiên, dòng đầu là header:
+Vào Import Excel và tải file mẫu. Sheet đầu tiên dùng các cột:
 
 | question | optionA | optionB | optionC | optionD | correctOption | difficulty | subjectName | subjectCode | chapterName | chapterOrder |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-- `correctOption`: `A`, `B`, `C` hoặc `D`
-- `difficulty`: `EASY`, `MEDIUM` hoặc `HARD`
-- `subjectName`, `chapterName`: điền tên môn và tên chương dễ đọc, hệ thống sẽ tự tìm hoặc tạo mới khi import
-- `subjectCode`: mã môn duy nhất, ví dụ `MATH10`, `PHY10`
-- `chapterOrder`: thứ tự chương, ví dụ `1`, `2`, `3`
-- File cũ dùng `subjectId`, `chapterId` vẫn được hỗ trợ nếu đã có ID từ database
+Ý nghĩa:
+
+- `question`: nội dung câu hỏi.
+- `optionA`, `optionB`, `optionC`, `optionD`: 4 đáp án.
+- `correctOption`: đáp án đúng, dùng `A`, `B`, `C` hoặc `D`.
+- `difficulty`: độ khó, dùng `EASY`, `MEDIUM` hoặc `HARD`.
+- `subjectName`: tên môn học, ví dụ `Vật lý 10`.
+- `subjectCode`: mã môn duy nhất, ví dụ `PHY10`.
+- `chapterName`: tên chương, ví dụ `Động học chất điểm`.
+- `chapterOrder`: thứ tự chương, ví dụ `1`.
+
+Khi import, hệ thống tự tìm hoặc tạo môn/chương theo `subjectCode`, `subjectName` và `chapterName`. File cũ dùng `subjectId`, `chapterId` vẫn được hỗ trợ.
+
+## Xuất đề
+
+Sau khi sinh đề, mỗi mã đề được tải riêng:
+
+- Word đề thi: `de-thi-...-ma-101.docx`
+- PDF đề thi: `de-thi-...-ma-101.pdf`
+- Word đáp án: `dap-an-...-ma-101.docx`
+
+PDF đã nhúng font Unicode để hiển thị tiếng Việt.
+
+## Deploy Vercel
+
+Theo tài liệu Express on Vercel, Express app có thể deploy khi entrypoint như `src/index.ts` export ứng dụng bằng `export default app`. Server trong repo đã cấu hình theo hướng này; `app.listen()` chỉ chạy khi chạy local.
+
+Khuyến nghị deploy thành 2 Vercel project:
+
+1. API project
+   - Root Directory: `server`
+   - Environment Variables:
+     - `DATABASE_URL`
+     - `JWT_SECRET`
+     - `CLIENT_URL`
+   - `CLIENT_URL` là domain frontend được phép gọi API. Có thể dùng nhiều domain, ngăn cách bằng dấu phẩy.
+
+2. Client project
+   - Root Directory: `client`
+   - Environment Variables:
+     - `NEXT_PUBLIC_API_URL="https://your-api.vercel.app/api"`
+
+Sau khi đổi environment variables trên Vercel, redeploy project tương ứng.
+
+## Scripts
+
+```bash
+npm run dev
+npm run dev:client
+npm run dev:server
+npm run typecheck
+npm run build
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+```
