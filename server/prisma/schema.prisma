@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  name         String
+  passwordHash String
+  exams        Exam[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Subject {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  name        String
+  description String?
+  chapters    Chapter[]
+  questions   Question[]
+  exams       Exam[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Chapter {
+  id         String     @id @default(cuid())
+  name       String
+  orderIndex Int
+  subjectId  String
+  subject    Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions  Question[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([subjectId, orderIndex])
+}
+
+model Question {
+  id         String         @id @default(cuid())
+  content    String
+  difficulty Difficulty
+  subjectId  String
+  chapterId  String
+  subject    Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  chapter    Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  answers    Answer[]
+  examItems  ExamQuestion[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  label      String
+  content    String
+  isCorrect  Boolean  @default(false)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Exam {
+  id             String     @id @default(cuid())
+  title          String
+  subjectId      String
+  createdById    String
+  totalQuestions Int
+  subject        Subject    @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  createdBy      User       @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  codes          ExamCode[]
+  createdAt      DateTime   @default(now())
+}
+
+model ExamCode {
+  id        String         @id @default(cuid())
+  examId    String
+  code      Int
+  exam      Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questions ExamQuestion[]
+
+  @@unique([examId, code])
+}
+
+model ExamQuestion {
+  id               String       @id @default(cuid())
+  examCodeId       String
+  questionId       String
+  orderIndex       Int
+  questionSnapshot String
+  correctOption    String
+  examCode         ExamCode     @relation(fields: [examCodeId], references: [id], onDelete: Cascade)
+  question         Question     @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  answers          ExamAnswer[]
+
+  @@unique([examCodeId, orderIndex])
+}
+
+model ExamAnswer {
+  id             String       @id @default(cuid())
+  examQuestionId String
+  label          String
+  originalLabel  String
+  content        String
+  isCorrect      Boolean      @default(false)
+  orderIndex     Int
+  examQuestion   ExamQuestion @relation(fields: [examQuestionId], references: [id], onDelete: Cascade)
+}
