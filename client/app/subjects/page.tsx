@@ -141,7 +141,7 @@ export default function SubjectsPage() {
           </thead>
           <tbody>
             {subjects.length ? paginatedSubjects.map((subject) => (
-              <tr key={subject.id}>
+              <tr key={subject.id} className="interactive-row">
                 <td className="font-black">{subject.code}</td>
                 <td>{subject.name}</td>
                 <td className="muted">{subject.description}</td>

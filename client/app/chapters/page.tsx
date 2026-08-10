@@ -174,7 +174,7 @@ export default function ChaptersPage() {
               {subjectChapters.length ? (
                 <div className="divide-y divide-[var(--line)]">
                   {subjectChapters.map((chapter) => (
-                    <article key={chapter.id} className="grid gap-3 px-4 py-3 md:grid-cols-[auto_1fr_auto_auto] md:items-center">
+                    <article key={chapter.id} className="interactive-row grid gap-3 px-4 py-3 md:grid-cols-[auto_1fr_auto_auto] md:items-center">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--line)] bg-white text-sm font-black tabular-nums">
                         {chapter.orderIndex}
                       </div>

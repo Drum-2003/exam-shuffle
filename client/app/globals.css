@@ -173,6 +173,33 @@ svg {
   background: rgba(241, 247, 238, 0.8);
 }
 
+.table tbody tr.interactive-row {
+  transform-origin: center;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.table tbody tr.interactive-row td {
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.table tbody tr.interactive-row:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.04);
+}
+
+.table tbody tr.interactive-row:hover td {
+  background: #fbfff7;
+  box-shadow: 0 10px 22px rgba(22, 33, 27, 0.06);
+}
+
+.table tbody tr.interactive-row:active {
+  transform: translateY(0) scale(0.995);
+}
+
 .chip {
   display: inline-flex;
   min-height: 24px;
@@ -190,6 +217,10 @@ svg {
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 10px 28px rgba(22, 33, 27, 0.06);
+}
+
+.panel {
+  animation: panel-rise 260ms ease both;
 }
 
 .muted {
@@ -214,6 +245,21 @@ svg {
   background: rgba(255, 255, 255, 0.95);
   padding: 22px;
   box-shadow: var(--shadow-soft);
+  transform-origin: center;
+  transition:
+    transform 170ms ease,
+    box-shadow 170ms ease,
+    border-color 170ms ease;
+}
+
+.quiz-card.card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(22, 33, 27, 0.11);
+}
+
+.quiz-card.card:active {
+  transform: translateY(-1px) scale(0.995);
 }
 
 .quiz-card__header.card__header {
@@ -256,6 +302,19 @@ svg {
   min-height: 42px;
   border-radius: 8px;
   font-weight: 850;
+  transition:
+    transform 130ms ease,
+    box-shadow 130ms ease,
+    filter 130ms ease;
+}
+
+.quiz-button.button:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+}
+
+.quiz-button.button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .quiz-button.button--icon-only {
@@ -266,6 +325,74 @@ svg {
 
 .quiz-button svg {
   flex: 0 0 auto;
+}
+
+.app-nav-link {
+  transform-origin: center;
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease;
+}
+
+.app-nav-link svg {
+  transition:
+    transform 150ms ease,
+    color 150ms ease;
+}
+
+.app-nav-link:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 18px rgba(22, 33, 27, 0.06);
+}
+
+.app-nav-link:hover svg {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.app-nav-link:active {
+  transform: translateX(2px) scale(0.99);
+}
+
+.interactive-row {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+article.interactive-row:hover {
+  background: rgba(251, 255, 247, 0.92);
+  box-shadow: inset 3px 0 0 var(--mint);
+  transform: translateX(4px);
+}
+
+article.interactive-row:hover .chip {
+  transform: translateY(-1px);
+}
+
+article.interactive-row:active {
+  transform: translateX(2px) scale(0.995);
+}
+
+.chip {
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+
+@keyframes panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .loading-shell {
@@ -412,5 +539,19 @@ svg {
 
   .skeleton-block::after {
     animation: none;
+  }
+
+  .panel {
+    animation: none;
+  }
+
+  .app-nav-link:hover,
+  .app-nav-link:hover svg,
+  .quiz-card.card:hover,
+  .quiz-button.button:hover,
+  .table tbody tr.interactive-row:hover,
+  article.interactive-row:hover,
+  article.interactive-row:hover .chip {
+    transform: none;
   }
 }
