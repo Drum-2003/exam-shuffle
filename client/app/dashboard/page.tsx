@@ -18,10 +18,15 @@ const stats = [
 
 const numberFormatter = new Intl.NumberFormat("vi-VN");
 
-function AnimatedStatNumber({ value, delayMs = 0 }: { value: number; delayMs?: number }) {
+function AnimatedStatNumber({ value, delayMs = 0, play }: { value: number; delayMs?: number; play: boolean }) {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
+    if (!play) {
+      setDisplayValue(0);
+      return;
+    }
+
     const reduceMotion =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -33,7 +38,7 @@ function AnimatedStatNumber({ value, delayMs = 0 }: { value: number; delayMs?: n
 
     let animationFrame = 0;
     let timeoutId = 0;
-    const duration = 1400;
+    const duration = 1800;
 
     timeoutId = window.setTimeout(() => {
       const startedAt = performance.now();
@@ -56,7 +61,7 @@ function AnimatedStatNumber({ value, delayMs = 0 }: { value: number; delayMs?: n
       window.clearTimeout(timeoutId);
       window.cancelAnimationFrame(animationFrame);
     };
-  }, [delayMs, value]);
+  }, [delayMs, play, value]);
 
   return <>{numberFormatter.format(displayValue)}</>;
 }
@@ -64,11 +69,31 @@ function AnimatedStatNumber({ value, delayMs = 0 }: { value: number; delayMs?: n
 export default function DashboardPage() {
   const ready = useRequireAuth();
   const [data, setData] = useState<Record<string, number>>({});
+  const [statsCanPlay, setStatsCanPlay] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!ready) return;
-    apiFetch<Record<string, number>>("/dashboard").then(setData).catch((err) => setError(err.message));
+    let cancelled = false;
+    let playTimer = 0;
+
+    setStatsCanPlay(false);
+    apiFetch<Record<string, number>>("/dashboard")
+      .then((dashboardData) => {
+        if (cancelled) return;
+        setData(dashboardData);
+        playTimer = window.setTimeout(() => {
+          if (!cancelled) setStatsCanPlay(true);
+        }, 450);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err.message);
+      });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(playTimer);
+    };
   }, [ready]);
 
   if (!ready) return null;
@@ -91,7 +116,7 @@ export default function DashboardPage() {
                 <div className="min-w-0">
                   <Card.Description>{stat.label}</Card.Description>
                   <Card.Title className="mt-1 text-4xl tabular-nums">
-                    <AnimatedStatNumber value={value} delayMs={index * 110} />
+                    <AnimatedStatNumber value={value} delayMs={index * 160} play={statsCanPlay} />
                   </Card.Title>
                 </div>
               </Card.Header>
