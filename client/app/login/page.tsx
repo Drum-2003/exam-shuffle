@@ -35,8 +35,8 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-[var(--line)] bg-white/78 shadow-[var(--shadow-soft)] lg:grid-cols-[1fr_440px]">
-        <section className="flex min-h-[540px] flex-col justify-between bg-[linear-gradient(135deg,#fbfdf9,#edf5ee)] p-6 sm:p-8 lg:p-10">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-xl border border-[var(--line)] bg-white/72 shadow-[var(--shadow-soft)] lg:grid-cols-[1fr_430px]">
+        <section className="flex min-h-[520px] flex-col justify-between bg-[#f9fbf6] p-6 sm:p-8 lg:p-10">
           <div>
             <AppLogo size="login" />
             <h1 className="mt-4 max-w-2xl text-balance text-3xl font-black leading-tight text-[var(--ink)] sm:text-4xl">
@@ -49,17 +49,17 @@ export default function LoginPage() {
 
           <div className="grid gap-3 sm:grid-cols-3">
             {["Ngân hàng", "Sinh mã đề", "Bảng đáp án"].map((item) => (
-              <div key={item} className="flex min-h-[92px] flex-col justify-between rounded-xl border border-[var(--line)] bg-white/86 px-4 py-3 shadow-sm">
+              <div key={item} className="flex min-h-[86px] flex-col justify-between rounded-lg border border-[var(--line)] bg-white px-4 py-3">
                 <div className="flex min-h-[34px] items-center text-xs font-black uppercase leading-5 tracking-[0.14em] text-[var(--blueprint)]">
                   {item}
                 </div>
-                <div className="h-1.5 rounded-full bg-[linear-gradient(90deg,var(--blueprint),var(--mint))]" />
+                <div className="h-1.5 rounded-full bg-[#dfe8d8]" />
               </div>
             ))}
           </div>
         </section>
 
-        <section className="flex items-center bg-white/50 p-4 sm:p-6 lg:p-8">
+        <section className="flex items-center p-4 sm:p-6 lg:p-8">
           <Card className="w-full">
             <Card.Header>
               <KeyRound aria-hidden="true" size={28} />

@@ -2,20 +2,17 @@
 @import "@heroui/styles";
 
 :root {
-  --ink: #13211b;
-  --paper: #eef4ef;
+  --ink: #16211b;
+  --paper: #f4f7f1;
   --surface: #ffffff;
-  --surface-soft: #f8fbf6;
-  --line: #d7e0d5;
-  --line-strong: #acbaac;
-  --mint: #127a61;
-  --amber: #b96f16;
-  --blueprint: #2f5fb8;
-  --danger: #b73535;
-  --sidebar: #14251e;
-  --sidebar-soft: #20362d;
-  --shadow-soft: 0 18px 48px rgba(19, 33, 27, 0.1);
-  --shadow-crisp: 0 1px 1px rgba(19, 33, 27, 0.06), 0 14px 34px rgba(19, 33, 27, 0.08);
+  --surface-soft: #fbfcf8;
+  --line: #d8dfd2;
+  --line-strong: #b8c4b4;
+  --mint: #16866b;
+  --amber: #c27a1c;
+  --blueprint: #315ea8;
+  --danger: #bd3f3f;
+  --shadow-soft: 0 16px 42px rgba(22, 33, 27, 0.08);
 }
 
 * {
@@ -32,10 +29,8 @@ body {
   margin: 0;
   overflow-x: hidden;
   background:
-    linear-gradient(90deg, rgba(19, 33, 27, 0.035) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(19, 33, 27, 0.035) 1px, transparent 1px),
-    linear-gradient(180deg, #fbfdf9 0%, var(--paper) 58%, #e8f0e8 100%);
-  background-size: 28px 28px, 28px 28px, auto;
+    radial-gradient(circle at top left, rgba(49, 94, 168, 0.12), transparent 320px),
+    linear-gradient(180deg, #fbfcf8 0%, var(--paper) 52%, #eef4eb 100%);
   color: var(--ink);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   font-size: 15px;
@@ -93,11 +88,11 @@ svg {
   min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--surface);
   color: var(--ink);
   padding: 0 12px;
   outline: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 1px 0 rgba(19, 33, 27, 0.04);
+  box-shadow: 0 1px 0 rgba(22, 33, 27, 0.04);
   transition:
     border-color 140ms ease,
     box-shadow 140ms ease,
@@ -138,14 +133,13 @@ svg {
 .select:focus-visible,
 .textarea:focus-visible {
   border-color: var(--blueprint);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(47, 95, 184, 0.18), 0 10px 24px rgba(19, 33, 27, 0.07);
+  box-shadow: 0 0 0 3px rgba(49, 94, 168, 0.18);
 }
 
 .label {
   display: block;
   margin-bottom: 6px;
-  color: rgba(19, 33, 27, 0.68);
+  color: rgba(22, 33, 27, 0.72);
   font-size: 12px;
   font-weight: 800;
 }
@@ -157,8 +151,8 @@ svg {
 }
 
 .table th {
-  background: #edf4ee;
-  color: rgba(19, 33, 27, 0.68);
+  background: #eef3ea;
+  color: rgba(22, 33, 27, 0.72);
   font-size: 12px;
   font-weight: 900;
   text-align: left;
@@ -167,41 +161,39 @@ svg {
 .table th,
 .table td {
   border-bottom: 1px solid var(--line);
-  padding: 14px 16px;
+  padding: 13px 14px;
   vertical-align: top;
 }
 
 .table td {
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.56);
 }
 
 .table tbody tr:hover td {
-  background: #f8fbf6;
+  background: rgba(241, 247, 238, 0.8);
 }
 
 .chip {
   display: inline-flex;
-  min-height: 26px;
+  min-height: 24px;
   align-items: center;
   border-radius: 999px;
-  border: 1px solid rgba(18, 122, 97, 0.16);
-  background: #eaf7f2;
-  color: #086c53;
+  background: #e5f4ef;
+  color: #087257;
   font-size: 12px;
   font-weight: 800;
-  padding: 0 10px;
+  padding: 0 9px;
 }
 
 .panel {
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: var(--shadow-crisp);
-  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 28px rgba(22, 33, 27, 0.06);
 }
 
 .muted {
-  color: rgba(19, 33, 27, 0.62);
+  color: rgba(22, 33, 27, 0.64);
 }
 
 .empty-state {
@@ -209,22 +201,19 @@ svg {
   min-height: 160px;
   place-items: center;
   border: 1px dashed var(--line-strong);
-  border-radius: 12px;
-  background:
-    linear-gradient(135deg, rgba(47, 95, 184, 0.045), transparent 44%),
-    rgba(255, 255, 255, 0.72);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
   padding: 24px;
-  color: rgba(19, 33, 27, 0.66);
+  color: rgba(22, 33, 27, 0.66);
   text-align: center;
 }
 
 .quiz-card.card {
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(250, 252, 247, 0.94));
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
   padding: 22px;
-  box-shadow: var(--shadow-crisp);
+  box-shadow: var(--shadow-soft);
 }
 
 .quiz-card__header.card__header {
@@ -246,7 +235,7 @@ svg {
 .quiz-card__title.card__title {
   margin: 0;
   color: var(--ink);
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 850;
   line-height: 1.25;
 }
@@ -258,11 +247,6 @@ svg {
   line-height: 1.45;
 }
 
-.dashboard-stat-value.card__title {
-  font-size: 2.55rem;
-  line-height: 0.95;
-}
-
 .quiz-card > svg,
 .quiz-card__header > svg {
   color: var(--blueprint);
@@ -272,21 +256,6 @@ svg {
   min-height: 42px;
   border-radius: 8px;
   font-weight: 850;
-  box-shadow: 0 8px 18px rgba(19, 33, 27, 0.08);
-  transition:
-    transform 120ms ease,
-    box-shadow 120ms ease,
-    background-color 120ms ease;
-}
-
-.quiz-button.button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(19, 33, 27, 0.1);
-}
-
-.quiz-button.button:active {
-  transform: translateY(0);
-  box-shadow: 0 5px 12px rgba(19, 33, 27, 0.09);
 }
 
 .quiz-button.button--icon-only {
@@ -297,40 +266,6 @@ svg {
 
 .quiz-button svg {
   flex: 0 0 auto;
-}
-
-.app-sidebar {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 38%),
-    var(--sidebar);
-  color: #f3fbf6;
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
-}
-
-.app-sidebar .muted {
-  color: rgba(243, 251, 246, 0.66);
-}
-
-.app-nav-link {
-  border: 1px solid transparent;
-  color: rgba(243, 251, 246, 0.76);
-}
-
-.app-nav-link:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.app-nav-link-active {
-  border-color: rgba(160, 221, 203, 0.36);
-  background: #ecf8f3;
-  color: var(--ink);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-}
-
-.app-nav-link-active svg {
-  color: var(--mint);
 }
 
 .loading-shell {

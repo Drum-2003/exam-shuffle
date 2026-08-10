@@ -14,7 +14,7 @@ export function AppLogo({
   className?: string;
 }) {
   return (
-    <div className={`${sizes[size]} overflow-hidden rounded-lg border border-black/5 bg-white shadow-sm ${className}`}>
+    <div className={`${sizes[size]} overflow-hidden rounded-lg bg-white ${className}`}>
       <img
         alt="Exam Shuffle"
         className="h-full w-full object-contain"
