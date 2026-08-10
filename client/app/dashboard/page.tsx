@@ -28,22 +28,13 @@ function AnimatedStatNumber({ value, delayMs = 0, play }: { value: number; delay
       return;
     }
 
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (reduceMotion) {
-      setDisplayValue(value);
-      return;
-    }
-
     let animationFrame = 0;
     let timeoutId = 0;
-    const duration = 2400;
-    const rollDuration = 900;
+    const duration = 3400;
+    const rollDuration = 1500;
     const rollCeiling = Math.max(value, 9);
     const rollStepOffset = Math.floor(delayMs / 40);
-    const rollEndValue = (Math.floor(rollDuration / 70) + rollStepOffset) % (rollCeiling + 1);
+    const rollEndValue = (Math.floor(rollDuration / 80) * 3 + rollStepOffset) % (rollCeiling + 1);
 
     timeoutId = window.setTimeout(() => {
       const startedAt = performance.now();
@@ -53,7 +44,7 @@ function AnimatedStatNumber({ value, delayMs = 0, play }: { value: number; delay
         const elapsed = now - startedAt;
 
         if (elapsed < rollDuration) {
-          const rollingValue = (Math.floor(elapsed / 70) + rollStepOffset) % (rollCeiling + 1);
+          const rollingValue = (Math.floor(elapsed / 80) * 3 + rollStepOffset) % (rollCeiling + 1);
           setDisplayValue(rollingValue);
         } else {
           const progress = Math.min((elapsed - rollDuration) / (duration - rollDuration), 1);
@@ -134,7 +125,7 @@ export default function DashboardPage() {
                   <div className="min-w-0">
                     <Card.Description>{stat.label}</Card.Description>
                     <Card.Title className="mt-1 text-4xl tabular-nums">
-                      <AnimatedStatNumber value={value} delayMs={index * 160} play={statsCanPlay} />
+                    <AnimatedStatNumber value={value} delayMs={index * 220} play={statsCanPlay} />
                     </Card.Title>
                   </div>
                 </Card.Header>
