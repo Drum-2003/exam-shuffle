@@ -32,25 +32,36 @@ function AnimatedStatNumber({ value, delayMs = 0, play }: { value: number; delay
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (reduceMotion || value === 0) {
+    if (reduceMotion) {
       setDisplayValue(value);
       return;
     }
 
     let animationFrame = 0;
     let timeoutId = 0;
-    const duration = 1800;
+    const duration = 2400;
+    const rollDuration = 900;
+    const rollCeiling = Math.max(value, 9);
+    const rollStepOffset = Math.floor(delayMs / 40);
+    const rollEndValue = (Math.floor(rollDuration / 70) + rollStepOffset) % (rollCeiling + 1);
 
     timeoutId = window.setTimeout(() => {
       const startedAt = performance.now();
       setDisplayValue(0);
 
       function tick(now: number) {
-        const progress = Math.min((now - startedAt) / duration, 1);
-        const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        setDisplayValue(Math.round(value * eased));
+        const elapsed = now - startedAt;
 
-        if (progress < 1) {
+        if (elapsed < rollDuration) {
+          const rollingValue = (Math.floor(elapsed / 70) + rollStepOffset) % (rollCeiling + 1);
+          setDisplayValue(rollingValue);
+        } else {
+          const progress = Math.min((elapsed - rollDuration) / (duration - rollDuration), 1);
+          const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+          setDisplayValue(Math.round(rollEndValue + (value - rollEndValue) * eased));
+        }
+
+        if (elapsed < duration) {
           animationFrame = window.requestAnimationFrame(tick);
         }
       }
