@@ -9,6 +9,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PaginationControls } from "../../components/PaginationControls";
 import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
+import { addAppNotification } from "../../lib/notifications";
 import type { Subject } from "../../lib/types";
 
 const emptyForm = { code: "", name: "", description: "" };
@@ -61,6 +62,7 @@ export default function SubjectsPage() {
     event.preventDefault();
     setError("");
     setMessage("");
+    const subjectName = form.name || form.code || "môn học";
     try {
       await apiFetch(editingId ? `/subjects/${editingId}` : "/subjects", {
         method: editingId ? "PUT" : "POST",
@@ -69,6 +71,12 @@ export default function SubjectsPage() {
       setForm(emptyForm);
       setEditingId("");
       setMessage(editingId ? "Đã cập nhật môn học." : "Đã thêm môn học.");
+      addAppNotification({
+        title: editingId ? "Đã cập nhật môn học" : "Đã thêm môn học",
+        message: `Môn học ${subjectName} đã được ${editingId ? "cập nhật" : "thêm"} thành công.`,
+        href: "/subjects",
+        tone: "success"
+      });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể lưu môn học.");
@@ -79,6 +87,7 @@ export default function SubjectsPage() {
     if (!confirm("Xóa môn học này? Các chương và câu hỏi liên quan cũng sẽ bị xóa.")) return;
     setError("");
     setMessage("");
+    const subjectName = subjects.find((subject) => subject.id === id)?.name || "môn học";
     try {
       await apiFetch(`/subjects/${id}`, { method: "DELETE" });
       if (editingId === id) {
@@ -86,6 +95,12 @@ export default function SubjectsPage() {
         setForm(emptyForm);
       }
       setMessage("Đã xóa môn học.");
+      addAppNotification({
+        title: "Đã xóa môn học",
+        message: `Môn học ${subjectName} và dữ liệu liên quan đã được xóa.`,
+        href: "/subjects",
+        tone: "warning"
+      });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể xóa môn học.");

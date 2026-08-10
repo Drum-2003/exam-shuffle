@@ -9,6 +9,7 @@ import { Notice } from "../../../components/Notice";
 import { PageHeader } from "../../../components/PageHeader";
 import { apiFetch } from "../../../lib/api";
 import { useRequireAuth } from "../../../lib/auth";
+import { addAppNotification } from "../../../lib/notifications";
 import type { Chapter, Exam, Subject } from "../../../lib/types";
 
 export default function GenerateExamPage() {
@@ -60,6 +61,12 @@ export default function GenerateExamPage() {
       const exam = await apiFetch<Exam>("/exams/generate", {
         method: "POST",
         body: JSON.stringify(form)
+      });
+      addAppNotification({
+        title: "Đã sinh đề mới",
+        message: `${exam.title} gồm ${exam.totalQuestions} câu và ${exam.codes?.length || form.codeCount} mã đề.`,
+        href: `/exams/${exam.id}`,
+        tone: "success"
       });
       router.push(`/exams/${exam.id}`);
     } catch (err) {

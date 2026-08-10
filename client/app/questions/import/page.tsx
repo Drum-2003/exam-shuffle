@@ -8,6 +8,7 @@ import { Notice } from "../../../components/Notice";
 import { PageHeader } from "../../../components/PageHeader";
 import { apiFetch, downloadFile } from "../../../lib/api";
 import { useRequireAuth } from "../../../lib/auth";
+import { addAppNotification } from "../../../lib/notifications";
 
 export default function ImportQuestionsPage() {
   const ready = useRequireAuth();
@@ -92,6 +93,12 @@ export default function ImportQuestionsPage() {
     try {
       const result = await apiFetch<{ imported: number }>("/questions/import", { method: "POST", body: data });
       setMessage(`Đã import ${result.imported} câu hỏi.`);
+      addAppNotification({
+        title: "Đã import câu hỏi",
+        message: `Đã import ${result.imported} câu hỏi từ file Excel.`,
+        href: "/questions",
+        tone: "success"
+      });
       clearFile();
     } catch (err) {
       const payload = (err as Error & { payload?: { rowErrors?: Array<{ row: number; errors: string[] }> } }).payload;

@@ -9,6 +9,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PaginationControls } from "../../components/PaginationControls";
 import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
+import { addAppNotification } from "../../lib/notifications";
 import type { Answer, Chapter, Difficulty, Question, Subject } from "../../lib/types";
 
 const labels = ["A", "B", "C", "D"] as const;
@@ -113,12 +114,19 @@ export default function QuestionsPage() {
     event.preventDefault();
     setError("");
     setMessage("");
+    const questionSummary = form.content.trim().slice(0, 60) || "câu hỏi";
     try {
       await apiFetch(editingId ? `/questions/${editingId}` : "/questions", {
         method: editingId ? "PUT" : "POST",
         body: JSON.stringify(form)
       });
       setMessage(editingId ? "Đã cập nhật câu hỏi." : "Đã thêm câu hỏi.");
+      addAppNotification({
+        title: editingId ? "Đã cập nhật câu hỏi" : "Đã thêm câu hỏi",
+        message: `${questionSummary}${form.content.length > 60 ? "..." : ""}`,
+        href: "/questions",
+        tone: "success"
+      });
       setEditingId("");
       setForm({
         ...emptyForm,
@@ -141,7 +149,14 @@ export default function QuestionsPage() {
 
   async function remove(id: string) {
     if (!confirm("Xóa câu hỏi này?")) return;
+    const questionSummary = questions.find((question) => question.id === id)?.content.slice(0, 60) || "câu hỏi";
     await apiFetch(`/questions/${id}`, { method: "DELETE" });
+    addAppNotification({
+      title: "Đã xóa câu hỏi",
+      message: `${questionSummary}${questionSummary.length >= 60 ? "..." : ""}`,
+      href: "/questions",
+      tone: "warning"
+    });
     await loadQuestions();
   }
 

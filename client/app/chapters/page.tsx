@@ -9,6 +9,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PaginationControls } from "../../components/PaginationControls";
 import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
+import { addAppNotification } from "../../lib/notifications";
 import type { Chapter, Subject } from "../../lib/types";
 
 const emptyForm = { name: "", orderIndex: 1, subjectId: "" };
@@ -86,12 +87,19 @@ export default function ChaptersPage() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
+    const chapterName = form.name || "chương";
     try {
       await apiFetch(editingId ? `/chapters/${editingId}` : "/chapters", {
         method: editingId ? "PUT" : "POST",
         body: JSON.stringify(form)
       });
       setMessage(editingId ? "Đã cập nhật chương." : "Đã thêm chương.");
+      addAppNotification({
+        title: editingId ? "Đã cập nhật chương" : "Đã thêm chương",
+        message: `Chương ${chapterName} đã được ${editingId ? "cập nhật" : "thêm"} thành công.`,
+        href: "/chapters",
+        tone: "success"
+      });
       setEditingId("");
       setForm({ ...emptyForm, subjectId: subjects[0]?.id || "" });
       await load();
@@ -104,6 +112,7 @@ export default function ChaptersPage() {
     if (!confirm("Xóa chương này? Các câu hỏi liên quan cũng sẽ bị xóa.")) return;
     setError("");
     setMessage("");
+    const chapterName = chapters.find((chapter) => chapter.id === id)?.name || "chương";
     try {
       await apiFetch(`/chapters/${id}`, { method: "DELETE" });
       if (editingId === id) {
@@ -111,6 +120,12 @@ export default function ChaptersPage() {
         setForm({ ...emptyForm, subjectId: subjects[0]?.id || "" });
       }
       setMessage("Đã xóa chương.");
+      addAppNotification({
+        title: "Đã xóa chương",
+        message: `Chương ${chapterName} và dữ liệu liên quan đã được xóa.`,
+        href: "/chapters",
+        tone: "warning"
+      });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Không thể xóa chương.");

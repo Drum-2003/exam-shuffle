@@ -8,6 +8,7 @@ import { Notice } from "../../components/Notice";
 import { PageHeader } from "../../components/PageHeader";
 import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
+import { addAppNotification } from "../../lib/notifications";
 import type { Exam, Subject } from "../../lib/types";
 
 const dateFormatter = new Intl.DateTimeFormat("vi-VN", {
@@ -37,7 +38,14 @@ export default function ExamsPage() {
 
   async function remove(id: string) {
     if (!confirm("Xóa đề này?")) return;
+    const examTitle = exams.find((exam) => exam.id === id)?.title || "đề thi";
     await apiFetch(`/exams/${id}`, { method: "DELETE" });
+    addAppNotification({
+      title: "Đã xóa đề thi",
+      message: `Đề ${examTitle} đã được xóa khỏi danh sách.`,
+      href: "/exams",
+      tone: "warning"
+    });
     await load();
   }
 
