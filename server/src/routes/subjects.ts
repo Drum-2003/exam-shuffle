@@ -37,6 +37,13 @@ subjectsRouter.put("/:id", async (req, res) => {
 });
 
 subjectsRouter.delete("/:id", async (req, res) => {
-  await prisma.subject.delete({ where: { id: req.params.id } });
+  const subject = await prisma.subject.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!subject) return res.status(404).json({ message: "Không tìm thấy môn học." });
+
+  await prisma.$transaction(async (tx) => {
+    await tx.exam.deleteMany({ where: { subjectId: req.params.id } });
+    await tx.subject.delete({ where: { id: req.params.id } });
+  });
+
   res.status(204).send();
 });

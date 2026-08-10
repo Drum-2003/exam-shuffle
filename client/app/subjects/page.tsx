@@ -57,8 +57,19 @@ export default function SubjectsPage() {
 
   async function remove(id: string) {
     if (!confirm("Xóa môn học này? Các chương và câu hỏi liên quan cũng sẽ bị xóa.")) return;
-    await apiFetch(`/subjects/${id}`, { method: "DELETE" });
-    await load();
+    setError("");
+    setMessage("");
+    try {
+      await apiFetch(`/subjects/${id}`, { method: "DELETE" });
+      if (editingId === id) {
+        setEditingId("");
+        setForm(emptyForm);
+      }
+      setMessage("Đã xóa môn học.");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa môn học.");
+    }
   }
 
   if (!ready) return null;

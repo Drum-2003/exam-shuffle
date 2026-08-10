@@ -81,8 +81,19 @@ export default function ChaptersPage() {
 
   async function remove(id: string) {
     if (!confirm("Xóa chương này? Các câu hỏi liên quan cũng sẽ bị xóa.")) return;
-    await apiFetch(`/chapters/${id}`, { method: "DELETE" });
-    await load();
+    setError("");
+    setMessage("");
+    try {
+      await apiFetch(`/chapters/${id}`, { method: "DELETE" });
+      if (editingId === id) {
+        setEditingId("");
+        setForm({ ...emptyForm, subjectId: subjects[0]?.id || "" });
+      }
+      setMessage("Đã xóa chương.");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Không thể xóa chương.");
+    }
   }
 
   if (!ready) return null;

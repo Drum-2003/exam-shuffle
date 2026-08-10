@@ -49,6 +49,39 @@ chaptersRouter.put("/:id", async (req, res) => {
 });
 
 chaptersRouter.delete("/:id", async (req, res) => {
-  await prisma.chapter.delete({ where: { id: req.params.id } });
+  const chapter = await prisma.chapter.findUnique({ where: { id: req.params.id }, select: { id: true } });
+  if (!chapter) return res.status(404).json({ message: "Không tìm thấy chương." });
+
+  const questionIds = (
+    await prisma.question.findMany({
+      where: { chapterId: req.params.id },
+      select: { id: true },
+    })
+  ).map((question) => question.id);
+
+  const examIds = questionIds.length
+    ? (
+        await prisma.exam.findMany({
+          where: {
+            codes: {
+              some: {
+                questions: {
+                  some: {
+                    questionId: { in: questionIds },
+                  },
+                },
+              },
+            },
+          },
+          select: { id: true },
+        })
+      ).map((exam) => exam.id)
+    : [];
+
+  await prisma.$transaction(async (tx) => {
+    if (examIds.length) await tx.exam.deleteMany({ where: { id: { in: examIds } } });
+    await tx.chapter.delete({ where: { id: req.params.id } });
+  });
+
   res.status(204).send();
 });
