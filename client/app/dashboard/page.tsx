@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, FileQuestion, Layers, WalletCards } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, FileQuestion, Layers, PlusCircle, Shuffle, Upload, WalletCards } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "../../components/AppShell";
@@ -16,6 +16,19 @@ const stats = [
   { key: "questions", label: "Câu hỏi", icon: FileQuestion, helper: "Trong ngân hàng", href: "/questions" },
   { key: "exams", label: "Đề đã tạo", icon: WalletCards, helper: "Lưu đề đã sinh", href: "/exams" }
 ] as const;
+
+const quickActions = [
+  { label: "Thêm môn/chương", href: "/subjects", icon: PlusCircle, helper: "Chuẩn bị cấu trúc ngân hàng câu hỏi" },
+  { label: "Import Excel", href: "/questions/import", icon: Upload, helper: "Nạp nhanh câu hỏi từ file mẫu" },
+  { label: "Sinh đề", href: "/exams/generate", icon: Shuffle, helper: "Chọn chương, độ khó và số mã đề" }
+] as const;
+
+const workflow = [
+  "Tạo môn học và chương",
+  "Nhập hoặc import câu hỏi",
+  "Sinh mã đề theo cấu hình",
+  "Xuất đề và đáp án"
+];
 
 const numberFormatter = new Intl.NumberFormat("vi-VN");
 
@@ -144,6 +157,54 @@ export default function DashboardPage() {
           Vào Sinh đề, chọn Toán 10, lấy 6 câu với 3 dễ, 2 trung bình, 1 khó và tạo 2 mã đề bắt đầu từ 101.
         </p>
       </section>
+
+      <div className="mt-6 grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
+        <section className="panel p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-black">Thao tác nhanh</h2>
+              <p className="muted mt-1 text-sm">Các lối tắt hay dùng khi chuẩn bị ngân hàng và sinh đề.</p>
+            </div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+
+              return (
+                <Link
+                  key={action.href}
+                  className="group rounded-lg border border-[var(--line)] bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
+                  href={action.href}
+                >
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="rounded-lg bg-[#edf4ff] p-2 text-[var(--blueprint)]">
+                      <Icon aria-hidden="true" size={20} />
+                    </div>
+                    <ArrowRight aria-hidden="true" className="text-[var(--mint)] transition group-hover:translate-x-1" size={18} />
+                  </div>
+                  <h3 className="font-black">{action.label}</h3>
+                  <p className="muted mt-2 text-sm leading-6">{action.helper}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="panel p-5">
+          <h2 className="text-xl font-black">Quy trình làm đề</h2>
+          <div className="mt-4 grid gap-3">
+            {workflow.map((item, index) => (
+              <div key={item} className="flex items-center gap-3 rounded-lg border border-[var(--line)] bg-white px-3 py-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e4f4ee] text-sm font-black tabular-nums text-[var(--mint)]">
+                  {index + 1}
+                </div>
+                <div className="min-w-0 flex-1 font-bold">{item}</div>
+                <CheckCircle2 aria-hidden="true" className="text-[var(--mint)]" size={18} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </AppShell>
   );
 }
