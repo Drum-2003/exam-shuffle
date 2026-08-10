@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "../../components/ui";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { AppShell } from "../../components/AppShell";
 import { Notice } from "../../components/Notice";
@@ -14,15 +14,31 @@ import type { Subject } from "../../lib/types";
 const emptyForm = { code: "", name: "", description: "" };
 const pageSize = 8;
 
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
 export default function SubjectsPage() {
   const ready = useRequireAuth();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState("");
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const paginatedSubjects = useMemo(() => subjects.slice((page - 1) * pageSize, page * pageSize), [page, subjects]);
+  const filteredSubjects = useMemo(() => {
+    const query = normalizeText(search.trim());
+    if (!query) return subjects;
+
+    return subjects.filter((subject) =>
+      [subject.code, subject.name, subject.description || ""].some((value) => normalizeText(value).includes(query))
+    );
+  }, [search, subjects]);
+  const paginatedSubjects = useMemo(() => filteredSubjects.slice((page - 1) * pageSize, page * pageSize), [filteredSubjects, page]);
 
   async function load() {
     setSubjects(await apiFetch<Subject[]>("/subjects"));
@@ -33,9 +49,13 @@ export default function SubjectsPage() {
   }, [ready]);
 
   useEffect(() => {
-    const totalPages = Math.max(1, Math.ceil(subjects.length / pageSize));
+    const totalPages = Math.max(1, Math.ceil(filteredSubjects.length / pageSize));
     if (page > totalPages) setPage(totalPages);
-  }, [page, subjects.length]);
+  }, [filteredSubjects.length, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -128,6 +148,35 @@ export default function SubjectsPage() {
         </div>
       </form>
 
+      <section className="panel mb-5 flex flex-col gap-3 p-4 md:flex-row md:items-end md:justify-between">
+        <label className="min-w-0 flex-1">
+          <span className="label">Tìm kiếm môn học</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden rounded-lg bg-[#edf4ff] p-3 text-[var(--blueprint)] sm:block">
+              <Search aria-hidden="true" size={18} />
+            </div>
+            <input
+              autoComplete="off"
+              className="input"
+              placeholder="Nhập mã môn, tên môn hoặc mô tả..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
+        </label>
+        <div className="flex items-center gap-3 md:pb-1">
+          <span className="chip">
+            {filteredSubjects.length}/{subjects.length} môn học
+          </span>
+          {search ? (
+            <Button aria-label="Xóa tìm kiếm môn học" variant="tertiary" onPress={() => setSearch("")}>
+              <X aria-hidden="true" size={16} />
+              Xóa lọc
+            </Button>
+          ) : null}
+        </div>
+      </section>
+
       <div className="panel overflow-x-auto">
         <table className="table">
           <thead>
@@ -140,7 +189,7 @@ export default function SubjectsPage() {
             </tr>
           </thead>
           <tbody>
-            {subjects.length ? paginatedSubjects.map((subject) => (
+            {subjects.length && filteredSubjects.length ? paginatedSubjects.map((subject) => (
               <tr key={subject.id} className="interactive-row">
                 <td className="font-black">{subject.code}</td>
                 <td>{subject.name}</td>
@@ -170,7 +219,13 @@ export default function SubjectsPage() {
                   </Button>
                 </td>
               </tr>
-            )) : (
+            )) : subjects.length ? (
+              <tr>
+                <td colSpan={5}>
+                  <div className="empty-state">Không tìm thấy môn học phù hợp với từ khóa hiện tại.</div>
+                </td>
+              </tr>
+            ) : (
               <tr>
                 <td colSpan={5}>
                   <div className="empty-state">Chưa có môn học. Thêm môn đầu tiên để bắt đầu tạo chương và câu hỏi.</div>
@@ -180,7 +235,7 @@ export default function SubjectsPage() {
           </tbody>
         </table>
       </div>
-      <PaginationControls label="môn học" page={page} pageSize={pageSize} totalItems={subjects.length} onPageChange={setPage} />
+      <PaginationControls label="môn học" page={page} pageSize={pageSize} totalItems={filteredSubjects.length} onPageChange={setPage} />
     </AppShell>
   );
 }
