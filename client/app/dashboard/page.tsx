@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, FileQuestion, Layers, WalletCards } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "../../components/AppShell";
 import { Notice } from "../../components/Notice";
@@ -10,10 +11,10 @@ import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
 
 const stats = [
-  { key: "subjects", label: "Môn học", icon: BookOpen, helper: "Đang quản lý" },
-  { key: "chapters", label: "Chương", icon: Layers, helper: "Theo môn học" },
-  { key: "questions", label: "Câu hỏi", icon: FileQuestion, helper: "Trong ngân hàng" },
-  { key: "exams", label: "Đề đã tạo", icon: WalletCards, helper: "Lưu đề đã sinh" }
+  { key: "subjects", label: "Môn học", icon: BookOpen, helper: "Đang quản lý", href: "/subjects" },
+  { key: "chapters", label: "Chương", icon: Layers, helper: "Theo môn học", href: "/chapters" },
+  { key: "questions", label: "Câu hỏi", icon: FileQuestion, helper: "Trong ngân hàng", href: "/questions" },
+  { key: "exams", label: "Đề đã tạo", icon: WalletCards, helper: "Lưu đề đã sinh", href: "/exams" }
 ] as const;
 
 const numberFormatter = new Intl.NumberFormat("vi-VN");
@@ -108,22 +109,29 @@ export default function DashboardPage() {
           const Icon = stat.icon;
           const value = data[stat.key] ?? 0;
           return (
-            <Card key={stat.key} className="min-h-[132px]">
-              <Card.Header>
-                <div className="rounded-lg bg-[#edf4ff] p-2 text-[var(--blueprint)]">
-                  <Icon aria-hidden="true" size={22} />
-                </div>
-                <div className="min-w-0">
-                  <Card.Description>{stat.label}</Card.Description>
-                  <Card.Title className="mt-1 text-4xl tabular-nums">
-                    <AnimatedStatNumber value={value} delayMs={index * 160} play={statsCanPlay} />
-                  </Card.Title>
-                </div>
-              </Card.Header>
-              <Card.Content>
-                <p className="muted text-sm">{stat.helper}</p>
-              </Card.Content>
-            </Card>
+            <Link
+              key={stat.key}
+              aria-label={`Mở trang ${stat.label}`}
+              className="block rounded-xl focus-visible:outline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[rgba(49,94,168,0.28)]"
+              href={stat.href}
+            >
+              <Card className="min-h-[132px]">
+                <Card.Header>
+                  <div className="rounded-lg bg-[#edf4ff] p-2 text-[var(--blueprint)]">
+                    <Icon aria-hidden="true" size={22} />
+                  </div>
+                  <div className="min-w-0">
+                    <Card.Description>{stat.label}</Card.Description>
+                    <Card.Title className="mt-1 text-4xl tabular-nums">
+                      <AnimatedStatNumber value={value} delayMs={index * 160} play={statsCanPlay} />
+                    </Card.Title>
+                  </div>
+                </Card.Header>
+                <Card.Content>
+                  <p className="muted text-sm">{stat.helper}</p>
+                </Card.Content>
+              </Card>
+            </Link>
           );
         })}
       </div>
