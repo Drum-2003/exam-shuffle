@@ -18,6 +18,49 @@ const stats = [
 
 const numberFormatter = new Intl.NumberFormat("vi-VN");
 
+function AnimatedStatNumber({ value, delayMs = 0 }: { value: number; delayMs?: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion || value === 0) {
+      setDisplayValue(value);
+      return;
+    }
+
+    let animationFrame = 0;
+    let timeoutId = 0;
+    const duration = 1400;
+
+    timeoutId = window.setTimeout(() => {
+      const startedAt = performance.now();
+      setDisplayValue(0);
+
+      function tick(now: number) {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const eased = progress < 0.5 ? 4 * progress ** 3 : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        setDisplayValue(Math.round(value * eased));
+
+        if (progress < 1) {
+          animationFrame = window.requestAnimationFrame(tick);
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(tick);
+    }, delayMs);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [delayMs, value]);
+
+  return <>{numberFormatter.format(displayValue)}</>;
+}
+
 export default function DashboardPage() {
   const ready = useRequireAuth();
   const [data, setData] = useState<Record<string, number>>({});
@@ -36,7 +79,7 @@ export default function DashboardPage() {
       {error ? <Notice message={error} tone="error" /> : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
+        {stats.map((stat, index) => {
           const Icon = stat.icon;
           const value = data[stat.key] ?? 0;
           return (
@@ -47,7 +90,9 @@ export default function DashboardPage() {
                 </div>
                 <div className="min-w-0">
                   <Card.Description>{stat.label}</Card.Description>
-                  <Card.Title className="mt-1 text-4xl tabular-nums">{numberFormatter.format(value)}</Card.Title>
+                  <Card.Title className="mt-1 text-4xl tabular-nums">
+                    <AnimatedStatNumber value={value} delayMs={index * 110} />
+                  </Card.Title>
                 </div>
               </Card.Header>
               <Card.Content>
