@@ -1,15 +1,14 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Bell, BookOpen, CheckCircle2, FileQuestion, Layers, PlusCircle, Shuffle, Upload, WalletCards } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, FileQuestion, Layers, PlusCircle, Shuffle, Upload, WalletCards } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AppShell } from "../../components/AppShell";
 import { Notice } from "../../components/Notice";
 import { PageHeader } from "../../components/PageHeader";
-import { Button, Card } from "../../components/ui";
+import { Card } from "../../components/ui";
 import { apiFetch } from "../../lib/api";
 import { useRequireAuth } from "../../lib/auth";
-import { clearAppNotifications, getAppNotifications, type AppNotification } from "../../lib/notifications";
 
 const stats = [
   { key: "subjects", label: "Môn học", icon: BookOpen, helper: "Đang quản lý", href: "/subjects" },
@@ -32,12 +31,6 @@ const workflow = [
 ];
 
 const numberFormatter = new Intl.NumberFormat("vi-VN");
-const notificationTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
-  day: "2-digit",
-  month: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit"
-});
 
 function AnimatedStatNumber({ value, delayMs = 0, play }: { value: number; delayMs?: number; play: boolean }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -93,7 +86,6 @@ export default function DashboardPage() {
   const ready = useRequireAuth();
   const [data, setData] = useState<Record<string, number>>({});
   const [statsCanPlay, setStatsCanPlay] = useState(false);
-  const [activityNotifications, setActivityNotifications] = useState<AppNotification[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -119,15 +111,6 @@ export default function DashboardPage() {
       window.clearTimeout(playTimer);
     };
   }, [ready]);
-
-  useEffect(() => {
-    if (ready) setActivityNotifications(getAppNotifications());
-  }, [ready]);
-
-  function clearNotifications() {
-    clearAppNotifications();
-    setActivityNotifications([]);
-  }
 
   if (!ready) return null;
 
@@ -155,7 +138,7 @@ export default function DashboardPage() {
                   <div className="min-w-0">
                     <Card.Description>{stat.label}</Card.Description>
                     <Card.Title className="mt-1 text-4xl tabular-nums">
-                    <AnimatedStatNumber value={value} delayMs={index * 220} play={statsCanPlay} />
+                      <AnimatedStatNumber value={value} delayMs={index * 220} play={statsCanPlay} />
                     </Card.Title>
                   </div>
                 </Card.Header>
@@ -173,66 +156,6 @@ export default function DashboardPage() {
         <p className="muted mt-2 max-w-3xl text-pretty">
           Vào Sinh đề, chọn Toán 10, lấy 6 câu với 3 dễ, 2 trung bình, 1 khó và tạo 2 mã đề bắt đầu từ 101.
         </p>
-      </section>
-
-      <section className="panel mt-6 p-5">
-        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="rounded-lg bg-[#edf4ff] p-2 text-[var(--blueprint)]">
-              <Bell aria-hidden="true" size={20} />
-            </div>
-            <div>
-              <h2 className="text-xl font-black">Thông báo</h2>
-              <p className="muted mt-1 text-sm">Hoạt động gần đây khi bạn thêm, sửa, xóa, import hoặc sinh đề.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="chip w-fit">{activityNotifications.length} mục</span>
-            {activityNotifications.length ? (
-              <Button variant="tertiary" onPress={clearNotifications}>
-                Xóa thông báo
-              </Button>
-            ) : null}
-          </div>
-        </div>
-
-        {activityNotifications.length ? (
-          <div className="grid gap-3 lg:grid-cols-3">
-            {activityNotifications.slice(0, 6).map((notification) => {
-            const Icon = notification.tone === "warning" ? AlertCircle : CheckCircle2;
-            const toneClass =
-              notification.tone === "warning"
-                ? "bg-[#fff7e8] text-[var(--amber)]"
-                : notification.tone === "success"
-                  ? "bg-[#e4f4ee] text-[var(--mint)]"
-                  : "bg-[#edf4ff] text-[var(--blueprint)]";
-
-            return (
-              <Link
-                key={notification.title}
-                className="group rounded-lg border border-[var(--line)] bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:border-[var(--line-strong)] hover:shadow-[var(--shadow-soft)]"
-                href={notification.href}
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div className={`rounded-lg p-2 ${toneClass}`}>
-                    <Icon aria-hidden="true" size={18} />
-                  </div>
-                  <ArrowRight aria-hidden="true" className="text-[var(--mint)] transition group-hover:translate-x-1" size={18} />
-                </div>
-                <h3 className="font-black">{notification.title}</h3>
-                <p className="muted mt-2 text-sm leading-6">{notification.message}</p>
-                <p className="mt-3 text-xs font-black text-[var(--blueprint)]">
-                  {notificationTimeFormatter.format(new Date(notification.createdAt))}
-                </p>
-              </Link>
-            );
-            })}
-          </div>
-        ) : (
-          <div className="empty-state min-h-[120px]">
-            Chưa có thông báo nào. Khi bạn thêm, sửa, xóa, import hoặc sinh đề, hoạt động sẽ xuất hiện ở đây.
-          </div>
-        )}
       </section>
 
       <div className="mt-6 grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">

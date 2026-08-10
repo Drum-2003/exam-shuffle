@@ -11,6 +11,7 @@ export type AppNotification = {
 
 const STORAGE_KEY = "quizforge_notifications";
 const MAX_NOTIFICATIONS = 20;
+export const APP_NOTIFICATIONS_UPDATED = "app-notifications-updated";
 
 function canUseStorage() {
   return typeof window !== "undefined" && Boolean(window.localStorage);
@@ -37,9 +38,11 @@ export function addAppNotification(input: Omit<AppNotification, "id" | "createdA
   };
   const notifications = [notification, ...getAppNotifications()].slice(0, MAX_NOTIFICATIONS);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+  window.dispatchEvent(new Event(APP_NOTIFICATIONS_UPDATED));
 }
 
 export function clearAppNotifications() {
   if (!canUseStorage()) return;
   window.localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(new Event(APP_NOTIFICATIONS_UPDATED));
 }
